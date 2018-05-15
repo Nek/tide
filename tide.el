@@ -1261,11 +1261,13 @@ in the file that are similar to the error at point."
        name))
    (let ((filtered
           (-filter (lambda (completion)
-                     (string-prefix-p prefix (plist-get completion :name)))
+		     (and 
+                      (string-prefix-p prefix (plist-get completion :name))
+		      (not (equal  (plist-get completion :kind) "warning" )))
                    completions)))
-     (if tide-sort-completions-by-kind
-         (-sort 'tide-compare-completions filtered)
-       filtered))))
+     (-distinct (if tide-sort-completions-by-kind
+		   (-sort 'tide-compare-completions filtered)
+		 filtered)))))
 
 (defun tide-command:completions (prefix cb)
   (let ((file-location
